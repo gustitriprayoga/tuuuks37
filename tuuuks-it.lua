@@ -13,20 +13,35 @@ local main = lib:Load({
 -- main features tab
 local Main = main:AddTab("Main")
 main:SelectTab()
-local MainSection = Main:AddSection({
-    Title = "📢 Information - Fish It",
-    Description = "Fish It! - gui version owner rav",
+
+-- 1. INFORMASI UMUM (DIPERBARUI UNTUK KERAPIHAN)
+local InfoSection = Main:AddSection({
+    Title = "📌 INFORMASI FI-SHIT | RAV GUI",
+    Description = "Versi terbaru dan panduan dasar.",
     Default = true,
     Locked = false
 })
 
-MainSection:AddParagraph({
-    Title = "⚡ FI-SHIT UPDATE !",
-    Description = "• Version : 1.0.0 "
+InfoSection:AddParagraph({
+    Title = "• Status Versi",
+    Description = "⚡ Versi Aktif: 1.0.0 "
 })
 
-MainSection:AddParagraph({
-    Title = "🔔 whats new ?",
+InfoSection:AddParagraph({
+    Title = "• Tombol Panggil Menu",
+    Description = "Tekan [CTRL KANAN] untuk membuka/menutup GUI. (Tombol Minimize/Floating Window dikontrol oleh Library UI)"
+})
+
+-- 2. CHANGELOG/PEMBARUAN (DIPISAHKAN)
+local ChangelogSection = Main:AddSection({
+    Title = "🔔 Pembaruan (Changelog)",
+    Description = "Daftar fitur terbaru dan perbaikan:",
+    Default = false, -- Dibuat false agar menu terlihat rapi saat awal
+    Locked = false
+})
+
+ChangelogSection:AddParagraph({
+    Title = "⚡ WHATS NEW?",
     Description = "- adjust / increase speed auto fish 2x\n- pengoptimalan auto fish\n- fix auto stop fish\n- fix air walk bug\n- add character freeze ( combo air walk )\n- add teleport to new fishing rod \n- add teleport to main temple \n- add teleport to treasure ruins \n- add buy event trigger ( ini bukan exploit cuma alat bantu beli event cuaca, jadi tetap pakai coin )\n- add afk blackscreen rendering\n- coming soon!"
 })
 
