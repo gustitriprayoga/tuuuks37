@@ -1,0 +1,1466 @@
+-- Saved by UniversalSynSaveInstance (Join to Copy Games) https://discord.gg/wx4ThpAsmw
+
+-- Decompiler will be improved VERY SOON!
+-- Decompiled with Konstant V2.1, a fast Luau decompiler made in Luau by plusgiant5 (https://discord.gg/brNTY8nX8t)
+-- Decompiled on 2025-09-08 03:37:55
+-- Luau version 6, Types version 3
+-- Time taken: 0.035864 seconds
+
+local RunService_upvr = game:GetService("RunService")
+local UserInputService_upvr = game:GetService("UserInputService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Signal = require(ReplicatedStorage.Packages.Signal)
+local Trove_upvr = require(ReplicatedStorage.Packages.Trove)
+local Net_upvr = require(ReplicatedStorage.Packages.Net)
+local spr_upvr = require(ReplicatedStorage.Packages.spr)
+local RaycastUtility_upvr = require(ReplicatedStorage.Shared.RaycastUtility)
+local Constants_upvr = require(ReplicatedStorage.Shared.Constants)
+local Soundbook_upvr = require(ReplicatedStorage.Shared.Soundbook)
+local ItemUtility_upvr = require(ReplicatedStorage.Shared.ItemUtility)
+local GuiControl_upvr = require(ReplicatedStorage.Modules.GuiControl)
+local HUDController_upvr = require(ReplicatedStorage.Controllers.HUDController)
+local AnimationController_upvr = require(ReplicatedStorage.Controllers.AnimationController)
+local InputControl_upvr = require(ReplicatedStorage.Modules.InputControl)
+local TextNotificationController_upvr = require(ReplicatedStorage.Controllers.TextNotificationController)
+local var17_upvw
+local LocalPlayer_upvr = game:GetService("Players").LocalPlayer
+local PlayerGui = LocalPlayer_upvr.PlayerGui
+local CurrentCamera_upvr = workspace.CurrentCamera
+local Charge_upvr = PlayerGui:WaitForChild("Charge")
+local Indicator_upvr = PlayerGui:WaitForChild("Indicator")
+local MobileFishingButton_upvr = PlayerGui:WaitForChild("HUD"):WaitForChild("MobileFishingButton")
+local Fishing_upvr = PlayerGui:WaitForChild("Fishing")
+local Main_upvr = Fishing_upvr.Main
+local CanvasGroup_upvr = Main_upvr.Display.CanvasGroup
+local TopTop_upvr = Main_upvr.TopTop
+Main_upvr.Position = UDim2.fromScale(0.5, 1.5)
+Fishing_upvr.Enabled = false
+local any_new_result1_upvr_6 = Trove_upvr.new()
+local any_new_result1_upvr_5 = Trove_upvr.new()
+local any_new_result1_upvr_7 = Trove_upvr.new()
+local any_new_result1_upvr_2 = Signal.new()
+local var32_upvw = false
+local any_fromGuiObject_result1_upvr = require(ReplicatedStorage.Packages.NumberSpinner).fromGuiObject(Main_upvr.TopTop.Top.Counter.ClickCount)
+any_fromGuiObject_result1_upvr.Prefix = '('
+any_fromGuiObject_result1_upvr.Suffix = ')'
+any_fromGuiObject_result1_upvr.Decimals = 0
+any_fromGuiObject_result1_upvr.Duration = 0.12
+any_fromGuiObject_result1_upvr.ZeroPadding = 3
+any_fromGuiObject_result1_upvr.Value = 0
+local var34_upvw = false
+local var35_upvw
+local var36_upvw
+local var37_upvw
+local var38_upvw = 0
+local var39_upvw = 0
+local var40_upvw
+local tbl_2_upvr = {Enum.KeyCode.ButtonB, Enum.KeyCode.ButtonR2}
+local function _() -- Line 148, Named "getZoneParams"
+	--[[ Upvalues[2]:
+		[1]: RaycastUtility_upvr (readonly)
+		[2]: LocalPlayer_upvr (readonly)
+	]]
+	local RaycastParams_new_result1_2 = RaycastParams.new()
+	RaycastParams_new_result1_2.IgnoreWater = true
+	RaycastParams_new_result1_2.RespectCanCollide = false
+	RaycastParams_new_result1_2.FilterType = Enum.RaycastFilterType.Exclude
+	RaycastParams_new_result1_2.FilterDescendantsInstances = RaycastUtility_upvr:getFilteredTargets(LocalPlayer_upvr)
+	return RaycastParams_new_result1_2
+end
+local function _(arg1) -- Line 159, Named "returnValue"
+	return function() -- Line 160
+		--[[ Upvalues[1]:
+			[1]: arg1 (readonly)
+		]]
+		return arg1
+	end
+end
+local module_upvr = {}
+local any_RemoteEvent_result1_upvr_3 = Net_upvr:RemoteEvent("FishingCompleted")
+function module_upvr.FishingMinigameClick(arg1, arg2) -- Line 177
+	--[[ Upvalues[5]:
+		[1]: var36_upvw (read and write)
+		[2]: var37_upvw (read and write)
+		[3]: any_new_result1_upvr_2 (readonly)
+		[4]: any_new_result1_upvr_7 (readonly)
+		[5]: any_RemoteEvent_result1_upvr_3 (readonly)
+	]]
+	if not var36_upvw then return end
+	if not var37_upvw then return end
+	local workspace_GetServerTimeNow_result1_4 = workspace:GetServerTimeNow()
+	if workspace_GetServerTimeNow_result1_4 - var37_upvw.LastInput < 0.1 then return end
+	local clamped = math.clamp(var37_upvw.Progress + var37_upvw.FishingClickPower, 0, 1)
+	var37_upvw.LastInput = workspace_GetServerTimeNow_result1_4
+	var37_upvw.Progress = clamped
+	local var48 = var37_upvw
+	var48.Inputs += 1
+	any_new_result1_upvr_2:Fire(var37_upvw)
+	if 1 <= clamped then
+		any_new_result1_upvr_7:Clean()
+		any_RemoteEvent_result1_upvr_3:FireServer()
+	end
+	return true
+end
+local BlockedHumanoidStates_upvr = require(ReplicatedStorage.Shared.BlockedHumanoidStates)
+function module_upvr.OnCooldown(arg1) -- Line 207
+	--[[ Upvalues[4]:
+		[1]: LocalPlayer_upvr (readonly)
+		[2]: BlockedHumanoidStates_upvr (readonly)
+		[3]: var38_upvw (read and write)
+		[4]: Constants_upvr (readonly)
+	]]
+	local Character_2 = LocalPlayer_upvr.Character
+	if not Character_2 then
+		return true
+	end
+	local class_Humanoid = Character_2:FindFirstChildWhichIsA("Humanoid")
+	if not class_Humanoid then
+		return true
+	end
+	if table.find(BlockedHumanoidStates_upvr.Fishing, class_Humanoid:GetState()) then
+		return true
+	end
+	if class_Humanoid.FloorMaterial == Enum.Material.Water then
+		return true
+	end
+	if class_Humanoid.SeatPart then
+		return true
+	end
+	if workspace:GetServerTimeNow() - var38_upvw < Constants_upvr.FishingCooldownTime then
+		return true
+	end
+	return false
+end
+local any_RemoteFunction_result1_upvr_2 = Net_upvr:RemoteFunction("RequestFishingMinigameStarted")
+function module_upvr.SendFishingRequestToServer(arg1, arg2, arg3) -- Line 240
+	--[[ Upvalues[5]:
+		[1]: LocalPlayer_upvr (readonly)
+		[2]: var17_upvw (read and write)
+		[3]: Constants_upvr (readonly)
+		[4]: RaycastUtility_upvr (readonly)
+		[5]: any_RemoteFunction_result1_upvr_2 (readonly)
+	]]
+	local Character = LocalPlayer_upvr.Character
+	local var54 = Character
+	if var54 then
+		var54 = Character:FindFirstChild("HumanoidRootPart")
+	end
+	if not var54 then
+		return false
+	end
+	local var55 = false
+	if FishingRodEquipped(var17_upvw.Data.EquippedId) then
+		local var57 = Character:FindFirstChild("!!!EQUIPPED_TOOL!!!")
+		if var57 then
+			var57 = Character:FindFirstChild("!!!EQUIPPED_TOOL!!!"):FindFirstChild("Handle")
+		end
+		if var57 then
+			var55 = true
+		end
+	end
+	if not var55 then
+		return false, "No fishing rod equipped!"
+	end
+	local CFrame = var54.CFrame
+	local RaycastParams_new_result1 = RaycastParams.new()
+	RaycastParams_new_result1.IgnoreWater = true
+	RaycastParams_new_result1.RespectCanCollide = false
+	RaycastParams_new_result1.FilterType = Enum.RaycastFilterType.Exclude
+	RaycastParams_new_result1.FilterDescendantsInstances = RaycastUtility_upvr:getFilteredTargets(LocalPlayer_upvr)
+	local workspace_Spherecast_result1 = workspace:Spherecast((CFrame + CFrame.LookVector * 12).Position, 2, Vector3.new(0, -Constants_upvr.FishingDistance, 0), RaycastParams_new_result1)
+	if not workspace_Spherecast_result1 then
+		return false
+	end
+	return any_RemoteFunction_result1_upvr_2:InvokeServer(workspace_Spherecast_result1.Position.Y, arg3)
+end
+local any_Hook_result1_upvr = GuiControl_upvr:Hook("Click")
+function module_upvr.RequestFishingMinigameClick(arg1) -- Line 274
+	--[[ Upvalues[11]:
+		[1]: var34_upvw (read and write)
+		[2]: var39_upvw (read and write)
+		[3]: var37_upvw (read and write)
+		[4]: Soundbook_upvr (readonly)
+		[5]: any_fromGuiObject_result1_upvr (readonly)
+		[6]: module_upvr (readonly)
+		[7]: spr_upvr (readonly)
+		[8]: TopTop_upvr (readonly)
+		[9]: UserInputService_upvr (readonly)
+		[10]: any_Hook_result1_upvr (readonly)
+		[11]: var40_upvw (read and write)
+	]]
+	if var34_upvw then
+	else
+		if workspace:GetServerTimeNow() - var39_upvw < 0.1 then return end
+		if var37_upvw and 1 <= var37_upvw.Progress then return end
+		Soundbook_upvr.Sounds.Click:Play()
+		if any_fromGuiObject_result1_upvr then
+			local var62 = any_fromGuiObject_result1_upvr
+			var62.Value += 1
+		end
+		module_upvr:FishingMinigameClick()
+		spr_upvr.stop(TopTop_upvr.UIScale)
+		TopTop_upvr.UIScale.Scale = 1.5
+		spr_upvr.target(TopTop_upvr.UIScale, 5, 15, {
+			Scale = 1;
+		})
+		if UserInputService_upvr:GetLastInputType() == Enum.UserInputType.MouseButton1 or UserInputService_upvr.MouseEnabled then
+			any_Hook_result1_upvr:Activate(UserInputService_upvr:GetMouseLocation())
+		end
+		local var64
+		if var64 then
+			local function INLINED() -- Internal function, doesn't exist in bytecode
+				var64 = var37_upvw.Progress
+				return var64
+			end
+			if not var37_upvw or not INLINED() then
+				var64 = 0
+			end
+			spr_upvr.stop(var40_upvw)
+			spr_upvr.target(var40_upvw, 50, 100, {
+				PlaybackSpeed = math.sqrt(var64 * 0.05) + 1;
+			})
+		end
+	end
+end
+local module_upvr_5 = require(script:WaitForChild("Effects"):WaitForChild("animateBobber"))
+function module_upvr.FishingMinigameChanged(arg1, arg2, arg3) -- Line 325
+	--[[ Upvalues[10]:
+		[1]: var37_upvw (read and write)
+		[2]: any_new_result1_upvr_7 (readonly)
+		[3]: module_upvr_5 (readonly)
+		[4]: LocalPlayer_upvr (readonly)
+		[5]: var36_upvw (read and write)
+		[6]: Main_upvr (readonly)
+		[7]: spr_upvr (readonly)
+		[8]: CanvasGroup_upvr (readonly)
+		[9]: var40_upvw (read and write)
+		[10]: any_new_result1_upvr_2 (readonly)
+	]]
+	if not var37_upvw then
+		if arg3.CosmeticTemplate then
+			local function _() -- Line 330
+				--[[ Upvalues[1]:
+					[1]: LocalPlayer_upvr (copied, readonly)
+				]]
+				local var81 = LocalPlayer_upvr.Character
+				if var81 then
+					var81 = LocalPlayer_upvr.Character:FindFirstChild("Torso")
+				end
+				if var81 then
+					return var81.CFrame
+				end
+				return CFrame.identity
+			end
+		end
+	end
+	if arg2 ~= "Stop" then
+		var36_upvw = arg3.UUID
+		var37_upvw = arg3
+	end
+	if arg2 == "Clicked" then
+		local randint = math.random(6, 12)
+		if math.random() < 0.5 then
+			randint *= -1
+		end
+		local var83 = 1 + math.random() * 0.5
+		Main_upvr.Display.Minigame.Mover.Size = UDim2.fromScale(var83, var83)
+		spr_upvr.stop(Main_upvr.Display.Minigame.Mover)
+		spr_upvr.target(Main_upvr.Display.Minigame.Mover, 50, 350, {
+			Rotation = randint;
+			Size = UDim2.fromScale(1, 1);
+		})
+		spr_upvr.stop(CanvasGroup_upvr.Left.Bar.Point)
+		spr_upvr.stop(CanvasGroup_upvr.Right.Bar.Point)
+		CanvasGroup_upvr.Left.Bar.Point.BackgroundTransparency = 0.1
+		CanvasGroup_upvr.Right.Bar.Point.BackgroundTransparency = 0.1
+		spr_upvr.target(CanvasGroup_upvr.Left.Bar.Point, 1, 3, {
+			BackgroundTransparency = 1;
+		})
+		spr_upvr.target(CanvasGroup_upvr.Right.Bar.Point, 1, 3, {
+			BackgroundTransparency = 1;
+		})
+		local var87
+		if var87 then
+			local function INLINED_3() -- Internal function, doesn't exist in bytecode
+				var87 = var37_upvw.Progress
+				return var87
+			end
+			if not var37_upvw or not INLINED_3() then
+				var87 = 0
+			end
+			spr_upvr.stop(var40_upvw)
+			spr_upvr.target(var40_upvw, 50, 100, {
+				PlaybackSpeed = math.sqrt(var87 * 0.05) + 1;
+			})
+		end
+	end
+	any_new_result1_upvr_2:Fire(arg3)
+end
+function module_upvr.FishingStopped(arg1) -- Line 392
+	--[[ Upvalues[15]:
+		[1]: var34_upvw (read and write)
+		[2]: var37_upvw (read and write)
+		[3]: AnimationController_upvr (readonly)
+		[4]: any_new_result1_upvr_5 (readonly)
+		[5]: var36_upvw (read and write)
+		[6]: var39_upvw (read and write)
+		[7]: HUDController_upvr (readonly)
+		[8]: spr_upvr (readonly)
+		[9]: Main_upvr (readonly)
+		[10]: Fishing_upvr (readonly)
+		[11]: any_new_result1_upvr_6 (readonly)
+		[12]: any_new_result1_upvr_7 (readonly)
+		[13]: any_fromGuiObject_result1_upvr (readonly)
+		[14]: GuiControl_upvr (readonly)
+		[15]: var38_upvw (read and write)
+	]]
+	local var89
+	if var89 then
+	else
+		var89 = true
+		var34_upvw = var89
+		var89 = var37_upvw
+		if var89 then
+			var89 = var37_upvw.Progress
+		end
+		if var89 and var89 <= 0 then
+			AnimationController_upvr:DestroyActiveAnimationTracks()
+			AnimationController_upvr:PlayAnimation("FishingFailure")
+		else
+			RefreshIdle()
+			AnimationController_upvr:DestroyActiveAnimationTracks({"FishingRodCharacterIdle2"})
+		end
+		any_new_result1_upvr_5:Clean()
+		_G.confirmFishingInput = nil
+		var36_upvw = nil
+		var37_upvw = nil
+		var39_upvw = 0
+		HUDController_upvr.ResetCamera()
+		spr_upvr.stop(Main_upvr.Display.Minigame.Mover)
+		Main_upvr.Display.Minigame.Mover.Size = UDim2.fromScale(1, 1)
+		Main_upvr.Display.Minigame.Mover.Rotation = 0
+		if var89 == 1 then
+			spr_upvr.stop(Main_upvr.Display.AnimationBG.UIGradient)
+			Main_upvr.Display.AnimationBG.UIGradient.Offset = Vector2.new(-1.5, 0)
+			spr_upvr.target(Main_upvr.Display.AnimationBG.UIGradient, 200, 325, {
+				Offset = Vector2.new(1.5, 0);
+			})
+			task.wait(0.2)
+		else
+			Main_upvr.Display.AnimationBG.UIGradient.Offset = Vector2.new(1.5, 0)
+		end
+		if var89 then
+			spr_upvr.stop(Fishing_upvr.Main)
+			spr_upvr.target(Fishing_upvr.Main, 100, 150, {
+				Position = UDim2.fromScale(0.5, 0.9);
+			})
+			task.wait(0.15)
+			spr_upvr.stop(Fishing_upvr.Main)
+			spr_upvr.target(Fishing_upvr.Main, 50, 100, {
+				Position = UDim2.fromScale(0.5, 1.5);
+			})
+			task.wait(0.45)
+		else
+			Fishing_upvr.Main.Position = UDim2.fromScale(0.5, 1.5)
+		end
+		any_new_result1_upvr_6:Clean()
+		any_new_result1_upvr_7:Clean()
+		any_fromGuiObject_result1_upvr.Value = 0
+		GuiControl_upvr:SetHUDVisibility(true)
+		if var89 and var89 <= 0 then
+			RefreshIdle()
+		end
+		var38_upvw = workspace:GetServerTimeNow()
+		var34_upvw = false
+	end
+end
+function module_upvr.FishingRodStarted(arg1, arg2) -- Line 472
+	--[[ Upvalues[9]:
+		[1]: AnimationController_upvr (readonly)
+		[2]: module_upvr (readonly)
+		[3]: Soundbook_upvr (readonly)
+		[4]: var40_upvw (read and write)
+		[5]: spr_upvr (readonly)
+		[6]: any_new_result1_upvr_5 (readonly)
+		[7]: CanvasGroup_upvr (readonly)
+		[8]: Fishing_upvr (readonly)
+		[9]: GuiControl_upvr (readonly)
+	]]
+	AnimationController_upvr:StopAnimation("FishingRodReelIdle")
+	AnimationController_upvr:StopAnimation("EasyFishReelStart")
+	AnimationController_upvr:PlayAnimation("EasyFishReel")
+	module_upvr:FishingMinigameChanged("Activated", arg2)
+	local any_Play_result1_upvr = Soundbook_upvr.Sounds.Reel:Play()
+	var40_upvw = any_Play_result1_upvr
+	any_Play_result1_upvr.Volume = 0
+	spr_upvr.target(any_Play_result1_upvr, 5, 10, {
+		Volume = Soundbook_upvr.Sounds.Reel.Volume;
+	})
+	any_new_result1_upvr_5:Add(function() -- Line 488
+		--[[ Upvalues[2]:
+			[1]: spr_upvr (copied, readonly)
+			[2]: any_Play_result1_upvr (readonly)
+		]]
+		spr_upvr.stop(any_Play_result1_upvr)
+		spr_upvr.target(any_Play_result1_upvr, 5, 10, {
+			Volume = 0;
+		})
+		task.wait(0.25)
+		any_Play_result1_upvr:Stop()
+		any_Play_result1_upvr:Destroy()
+	end)
+	spr_upvr.stop(CanvasGroup_upvr.Left.Bar)
+	spr_upvr.stop(CanvasGroup_upvr.Right.Bar)
+	CanvasGroup_upvr.Left.Bar.Size = UDim2.fromScale(0, 1)
+	CanvasGroup_upvr.Right.Bar.Size = UDim2.fromScale(0, 1)
+	spr_upvr.stop(Fishing_upvr.Main)
+	spr_upvr.target(Fishing_upvr.Main, 50, 250, {
+		Position = UDim2.fromScale(0.5, 0.95);
+	})
+	GuiControl_upvr:SetHUDVisibility(false)
+	Fishing_upvr.Enabled = true
+end
+local var99_upvw = false
+function module_upvr.NoInventorySpace(arg1) -- Line 519
+	--[[ Upvalues[4]:
+		[1]: var99_upvw (read and write)
+		[2]: Net_upvr (readonly)
+		[3]: Soundbook_upvr (readonly)
+		[4]: TextNotificationController_upvr (readonly)
+	]]
+	if var99_upvw then
+		return false
+	end
+	var99_upvw = true
+	local any_RemoteFunction_result1 = Net_upvr:RemoteFunction("SellAllItems")
+	if not any_RemoteFunction_result1 then
+		var99_upvw = false
+		return false
+	end
+	local any_InvokeServer_result1 = any_RemoteFunction_result1:InvokeServer()
+	if any_InvokeServer_result1 then
+		local any_Play_result1 = Soundbook_upvr.Sounds.CoinsChanged:Play()
+		any_Play_result1.Volume = 0.5
+		any_Play_result1.PlaybackSpeed = 1 + math.random() * 0.5
+		TextNotificationController_upvr:DeliverNotification({
+			Type = "Text";
+			Text = "Auto sold items! You had no space left.";
+			TextColor = {
+				R = 0;
+				G = 255;
+				B = 255;
+			};
+			CustomDuration = 5;
+		})
+	else
+		TextNotificationController_upvr:DeliverNotification({
+			Type = "Text";
+			Text = "Failed to auto sell items!";
+			TextColor = {
+				R = 255;
+				G = 0;
+				B = 0;
+			};
+			CustomDuration = 3;
+		})
+	end
+	var99_upvw = false
+	return any_InvokeServer_result1
+end
+local var107_upvw = false
+local any_new_result1_upvr = Signal.new()
+local var109_upvw = false
+local HapticService_upvr = game:GetService("HapticService")
+local any_new_result1_upvr_8 = Trove_upvr.new()
+local any_new_result1_upvr_3 = Signal.new()
+local module_upvr_4 = require(script:WaitForChild("InputStates"))
+local any_RemoteFunction_result1_upvr = Net_upvr:RemoteFunction("ChargeFishingRod")
+function module_upvr.RequestChargeFishingRod(arg1, arg2, arg3) -- Line 558
+	--[[ Upvalues[25]:
+		[1]: LocalPlayer_upvr (readonly)
+		[2]: var107_upvw (read and write)
+		[3]: var32_upvw (read and write)
+		[4]: any_new_result1_upvr (readonly)
+		[5]: Trove_upvr (readonly)
+		[6]: InputControl_upvr (readonly)
+		[7]: UserInputService_upvr (readonly)
+		[8]: var34_upvw (read and write)
+		[9]: var109_upvw (read and write)
+		[10]: module_upvr (readonly)
+		[11]: Constants_upvr (readonly)
+		[12]: var17_upvw (read and write)
+		[13]: AnimationController_upvr (readonly)
+		[14]: Soundbook_upvr (readonly)
+		[15]: CurrentCamera_upvr (readonly)
+		[16]: GuiControl_upvr (readonly)
+		[17]: HUDController_upvr (readonly)
+		[18]: HapticService_upvr (readonly)
+		[19]: any_new_result1_upvr_8 (readonly)
+		[20]: any_new_result1_upvr_3 (readonly)
+		[21]: module_upvr_4 (readonly)
+		[22]: TextNotificationController_upvr (readonly)
+		[23]: var35_upvw (read and write)
+		[24]: any_RemoteFunction_result1_upvr (readonly)
+		[25]: any_new_result1_upvr_6 (readonly)
+	]]
+	local var115_upvw
+	if LocalPlayer_upvr:GetAttribute("Loading") == nil then
+	else
+		if var107_upvw then return end
+		var32_upvw = true
+		var107_upvw = true
+		var115_upvw = false
+		local function Run(arg1_2, arg2_2) -- Line 575
+			--[[ Upvalues[2]:
+				[1]: var115_upvw (read and write)
+				[2]: any_new_result1_upvr (copied, readonly)
+			]]
+			if arg2_2 or var115_upvw then
+			elseif any_new_result1_upvr then
+				var115_upvw = true
+				any_new_result1_upvr:Fire(true)
+			end
+		end
+		local any_new_result1_upvr_4 = Trove_upvr.new()
+		_G.confirmFishingInput = Run
+		local any_Connect_result1_upvr = UserInputService_upvr.TouchEnded:Connect(Run)
+		local any_RegisterMouseReleased_result1_upvr = InputControl_upvr:RegisterMouseReleased(1, Run)
+		any_new_result1_upvr_4:Add(function() -- Line 592
+			--[[ Upvalues[4]:
+				[1]: any_Connect_result1_upvr (readonly)
+				[2]: any_RegisterMouseReleased_result1_upvr (readonly)
+				[3]: var107_upvw (copied, read and write)
+				[4]: var32_upvw (copied, read and write)
+			]]
+			any_Connect_result1_upvr:Disconnect()
+			any_RegisterMouseReleased_result1_upvr:Disconnect()
+			var107_upvw = false
+			var32_upvw = false
+			_G.confirmFishingInput = nil
+		end)
+		if var34_upvw then
+			any_new_result1_upvr_4:Destroy()
+			return
+		end
+		if var109_upvw then
+			any_new_result1_upvr_4:Destroy()
+			return
+		end
+		if module_upvr:OnCooldown() then
+			any_new_result1_upvr_4:Destroy()
+			return
+		end
+		if Constants_upvr.MaxInventorySize <= Constants_upvr:CountInventorySize(var17_upvw) then
+			module_upvr:NoInventorySpace()
+			any_new_result1_upvr_4:Destroy()
+			return
+		end
+		local GetItemDataFromEquippedItem_result1_2_upvr = GetItemDataFromEquippedItem(var17_upvw:GetExpect("EquippedId"))
+		if not GetItemDataFromEquippedItem_result1_2_upvr or GetItemDataFromEquippedItem_result1_2_upvr and GetItemDataFromEquippedItem_result1_2_upvr.Data.Type ~= "Fishing Rods" then
+			any_new_result1_upvr_4:Destroy()
+			return
+		end
+		var109_upvw = true
+		task.spawn(function() -- Line 638
+			--[[ Upvalues[1]:
+				[1]: AnimationController_upvr (copied, readonly)
+			]]
+			AnimationController_upvr:StopAnimation("FishingRodCharacterIdle2")
+			AnimationController_upvr:PlayAnimation("StartChargingRod1Hand")
+		end)
+		local var122_upvw
+		local var123_upvw = false
+		local var124_upvw
+		local function destroyClientFishingRequest_upvr(arg1_3) -- Line 648, Named "destroyClientFishingRequest"
+			--[[ Upvalues[10]:
+				[1]: var123_upvw (read and write)
+				[2]: AnimationController_upvr (copied, readonly)
+				[3]: any_new_result1_upvr_4 (readonly)
+				[4]: var124_upvw (read and write)
+				[5]: any_new_result1_upvr (copied, readonly)
+				[6]: var122_upvw (read and write)
+				[7]: module_upvr (copied, readonly)
+				[8]: var109_upvw (copied, read and write)
+				[9]: var32_upvw (copied, read and write)
+				[10]: var107_upvw (copied, read and write)
+			]]
+			if var123_upvw then
+			else
+				var123_upvw = true
+				if not arg1_3 then
+					AnimationController_upvr:StopAnimation("StartChargingRod1Hand")
+					AnimationController_upvr:StopAnimation("FinishChargingRod1Hand")
+				end
+				any_new_result1_upvr_4:Destroy()
+				_G.confirmFishingInput = nil
+				if var124_upvw then
+					var124_upvw:Disconnect()
+				end
+				if any_new_result1_upvr then
+					any_new_result1_upvr:DisconnectAll()
+				end
+				if not var122_upvw then
+					module_upvr:FishingStopped()
+				end
+				if not arg1_3 then
+					RefreshIdle()
+				end
+				module_upvr:UpdateChargeState(nil)
+				var109_upvw = false
+				var32_upvw = false
+				var107_upvw = false
+			end
+		end
+		if var115_upvw then
+			destroyClientFishingRequest_upvr()
+			return
+		end
+		if arg3 then
+		end
+		local var126_upvw = false
+		local function var125_upvr(arg1_4) -- Line 706
+			--[[ Upvalues[18]:
+				[1]: var126_upvw (read and write)
+				[2]: module_upvr (copied, readonly)
+				[3]: destroyClientFishingRequest_upvr (readonly)
+				[4]: arg3 (readonly)
+				[5]: AnimationController_upvr (copied, readonly)
+				[6]: Soundbook_upvr (copied, readonly)
+				[7]: GetItemDataFromEquippedItem_result1_2_upvr (readonly)
+				[8]: UserInputService_upvr (copied, readonly)
+				[9]: CurrentCamera_upvr (copied, readonly)
+				[10]: GuiControl_upvr (copied, readonly)
+				[11]: var122_upvw (read and write)
+				[12]: HUDController_upvr (copied, readonly)
+				[13]: HapticService_upvr (copied, readonly)
+				[14]: any_new_result1_upvr_8 (copied, readonly)
+				[15]: any_new_result1_upvr_3 (copied, readonly)
+				[16]: module_upvr_4 (copied, readonly)
+				[17]: TextNotificationController_upvr (copied, readonly)
+				[18]: var17_upvw (copied, read and write)
+			]]
+			local var127
+			if var126_upvw then
+			else
+				if module_upvr:OnCooldown() then return end
+				if not arg1_4 then
+					destroyClientFishingRequest_upvr()
+					return
+				end
+				var126_upvw = true
+				local any__getPower_result1_2 = module_upvr:_getPower()
+				if arg3 then
+					any__getPower_result1_2 = 0.5
+				end
+				module_upvr:UpdateChargeState(nil)
+				AnimationController_upvr:DestroyActiveAnimationTracks()
+				local _, any_PlayAnimation_result2 = AnimationController_upvr:PlayAnimation("CastFromFullChargePosition1Hand")
+				if any_PlayAnimation_result2 then
+					task.defer(function() -- Line 735
+						--[[ Upvalues[2]:
+							[1]: Soundbook_upvr (copied, readonly)
+							[2]: GetItemDataFromEquippedItem_result1_2_upvr (copied, readonly)
+						]]
+						local var132 = Soundbook_upvr.Sounds[GetItemDataFromEquippedItem_result1_2_upvr.Data.Name]
+						if not var132 then
+							var132 = Soundbook_upvr.Sounds.ThrowCast
+						end
+						var132:Play().Volume = 0.5 + math.random() * 0.75
+					end)
+					any_PlayAnimation_result2:Wait()
+				end
+				local var133
+				if UserInputService_upvr.MouseEnabled then
+					var133 = UserInputService_upvr:GetMouseLocation()
+				else
+					var127 = CurrentCamera_upvr.ViewportSize
+					var127 = CurrentCamera_upvr.ViewportSize.Y
+					var133 = Vector2.new(var127.X / 2, var127 / 2)
+				end
+				local any_SendFishingRequestToServer_result1, any_SendFishingRequestToServer_result2 = module_upvr:SendFishingRequestToServer(var133, any__getPower_result1_2)
+				if any_SendFishingRequestToServer_result1 then
+					GuiControl_upvr:SetHUDVisibility(false)
+					var122_upvw = true
+					_G.confirmFishingInput = nil
+					AnimationController_upvr:StopAnimation("FishingRodReelIdle")
+					AnimationController_upvr:PlayAnimation("EasyFishReelStart")
+					HUDController_upvr.SetCameraFOV(55)
+					local any_GetLastInputType_result1 = UserInputService_upvr:GetLastInputType()
+					local var137
+					if any_SendFishingRequestToServer_result2.SelectedRarity <= 0.01 then
+						Soundbook_upvr.Sounds.RareExclaim:Play()
+						if HapticService_upvr:IsVibrationSupported(any_GetLastInputType_result1) then
+							var137 = Enum.VibrationMotor.Large
+							HapticService_upvr:SetMotor(any_GetLastInputType_result1, Enum.VibrationMotor.Large, 0.15)
+							-- KONSTANTWARNING: GOTO [166] #129
+						end
+					else
+						Soundbook_upvr.Sounds.Exclaim:Play()
+						if HapticService_upvr:IsVibrationSupported(any_GetLastInputType_result1) then
+							var137 = Enum.VibrationMotor.Small
+							HapticService_upvr:SetMotor(any_GetLastInputType_result1, Enum.VibrationMotor.Small, 0.1)
+						end
+					end
+					if HapticService_upvr:IsVibrationSupported(any_GetLastInputType_result1) and var137 then
+						HapticService_upvr:SetMotor(any_GetLastInputType_result1, var137, 0)
+					end
+					module_upvr:FishingRodStarted(any_SendFishingRequestToServer_result2)
+					return
+				end
+				local var139_upvw = true
+				task.spawn(function() -- Line 798
+					--[[ Upvalues[9]:
+						[1]: any_new_result1_upvr_8 (copied, readonly)
+						[2]: UserInputService_upvr (copied, readonly)
+						[3]: any_new_result1_upvr_3 (copied, readonly)
+						[4]: module_upvr_4 (copied, readonly)
+						[5]: var139_upvw (read and write)
+						[6]: arg1_4 (readonly)
+						[7]: TextNotificationController_upvr (copied, readonly)
+						[8]: var17_upvw (copied, read and write)
+						[9]: GuiControl_upvr (copied, readonly)
+					]]
+					any_new_result1_upvr_8:Add(UserInputService_upvr.JumpRequest:Connect(function() -- Line 799
+						--[[ Upvalues[1]:
+							[1]: any_new_result1_upvr_3 (copied, readonly)
+						]]
+						any_new_result1_upvr_3:Fire()
+					end))
+					any_new_result1_upvr_8:Add(UserInputService_upvr.InputBegan:Connect(function(arg1_5, arg2_3) -- Line 803
+						--[[ Upvalues[2]:
+							[1]: module_upvr_4 (copied, readonly)
+							[2]: any_new_result1_upvr_3 (copied, readonly)
+						]]
+						if arg2_3 then
+						elseif table.find(module_upvr_4, arg1_5.UserInputType) then
+							any_new_result1_upvr_3:Fire()
+						end
+					end))
+					any_new_result1_upvr_8:Add(function() -- Line 813
+						--[[ Upvalues[2]:
+							[1]: var139_upvw (copied, read and write)
+							[2]: any_new_result1_upvr_3 (copied, readonly)
+						]]
+						if var139_upvw then
+							any_new_result1_upvr_3:Fire()
+						end
+						_G.confirmFishingInput = nil
+					end)
+					local var143
+					if typeof(arg1_4) == "string" then
+						var143 = arg1_4
+					else
+						var143 = "You missed the water!"
+					end
+					TextNotificationController_upvr:DeliverNotification({
+						Type = "Text";
+						Text = var143;
+						TextColor = {
+							R = 255;
+							G = 0;
+							B = 0;
+						};
+						CustomDuration = 3.5;
+					})
+					if var17_upvw:GetExpect("AutoFishing") then
+						task.delay(0.5, function() -- Line 832
+							--[[ Upvalues[1]:
+								[1]: any_new_result1_upvr_3 (copied, readonly)
+							]]
+							any_new_result1_upvr_3:Fire()
+						end)
+					else
+						GuiControl_upvr:SetHUDVisibility(true)
+						local any_OnChange_result1_upvr = var17_upvw:OnChange("AutoFishing", function(arg1_6) -- Line 838
+							--[[ Upvalues[1]:
+								[1]: any_new_result1_upvr_3 (copied, readonly)
+							]]
+							if arg1_6 then
+								any_new_result1_upvr_3:Fire()
+							end
+						end)
+						any_new_result1_upvr_8:Add(function() -- Line 844
+							--[[ Upvalues[1]:
+								[1]: any_OnChange_result1_upvr (readonly)
+							]]
+							any_OnChange_result1_upvr:Disconnect()
+						end)
+					end
+				end)
+				any_new_result1_upvr_3:Wait()
+				var139_upvw = false
+				any_new_result1_upvr_8:Clean()
+				module_upvr:RequestClientStopFishing(true, function() -- Line 854
+					--[[ Upvalues[2]:
+						[1]: destroyClientFishingRequest_upvr (copied, readonly)
+						[2]: var126_upvw (copied, read and write)
+					]]
+					destroyClientFishingRequest_upvr(true)
+					var126_upvw = false
+				end)
+			end
+		end
+		local workspace_GetServerTimeNow_result1 = workspace:GetServerTimeNow()
+		var35_upvw = workspace_GetServerTimeNow_result1
+		module_upvr:UpdateChargeState(workspace_GetServerTimeNow_result1)
+		if not any_RemoteFunction_result1_upvr:InvokeServer(workspace_GetServerTimeNow_result1) then
+			destroyClientFishingRequest_upvr()
+			return
+		end
+		if not false then
+			any_new_result1_upvr_6:Add(function() -- Line 877
+				--[[ Upvalues[1]:
+					[1]: destroyClientFishingRequest_upvr (readonly)
+				]]
+				destroyClientFishingRequest_upvr(true)
+			end)
+			any_new_result1_upvr_6:Add(function() -- Line 882
+				--[[ Upvalues[1]:
+					[1]: var109_upvw (copied, read and write)
+				]]
+				var109_upvw = false
+			end)
+		end
+		if true then
+			var125_upvr(true)
+		else
+			local _ = function(arg1_7) -- Line 890
+				--[[ Upvalues[1]:
+					[1]: var125_upvr (readonly)
+				]]
+				var125_upvr(true)
+			end
+		end
+	end
+end
+function module_upvr.UpdateChargeState(arg1, arg2) -- Line 896
+	--[[ Upvalues[4]:
+		[1]: module_upvr (readonly)
+		[2]: any_new_result1_upvr_6 (readonly)
+		[3]: RunService_upvr (readonly)
+		[4]: Charge_upvr (readonly)
+	]]
+	if arg2 then
+		module_upvr:_updateChargeFrame()
+		any_new_result1_upvr_6:Add(RunService_upvr.Heartbeat:Connect(function(arg1_8) -- Line 900
+			--[[ Upvalues[1]:
+				[1]: module_upvr (copied, readonly)
+			]]
+			module_upvr:_updateChargeFrame()
+		end))
+	end
+	if typeof(arg2) ~= "number" then
+	else
+	end
+	Charge_upvr.Enabled = true
+end
+function module_upvr._getPower(arg1) -- Line 908
+	--[[ Upvalues[1]:
+		[1]: var35_upvw (read and write)
+	]]
+	local var156 = var35_upvw
+	if not var156 then
+		return 0
+	end
+	return (1 - math.sin((math.pi/2) + (workspace:GetServerTimeNow() - var156) * Random.new(var156):NextInteger(4, 10))) / 2
+end
+function module_upvr._updateChargeFrame(arg1) -- Line 926
+	--[[ Upvalues[2]:
+		[1]: Charge_upvr (readonly)
+		[2]: module_upvr (readonly)
+	]]
+	if not Charge_upvr.Enabled then
+	else
+		local any__getPower_result1 = module_upvr:_getPower()
+		local var158 = 255 - 255 * any__getPower_result1
+		Charge_upvr.Main.Frame.Top.BaseLuck.TextColor3 = Color3.fromRGB(var158, 255, var158)
+		Charge_upvr.Main.Frame.Top.UIScale.Scale = 1 + 0.2 * any__getPower_result1
+		Charge_upvr.Main.Frame.Top.BaseLuck.Text = `x{math.round(any__getPower_result1 * 10) / 10 + 1} Luck`
+		Charge_upvr.Main.CanvasGroup.Bar.Size = UDim2.fromScale(1, any__getPower_result1)
+	end
+end
+local VFXUtility_upvr = require(ReplicatedStorage.Shared.VFXUtility)
+local PlayVFX_upvr = require(ReplicatedStorage.Controllers.VFXController).PlayVFX
+function module_upvr.BaitSpawned(arg1, arg2, arg3, arg4) -- Line 950
+	--[[ Upvalues[3]:
+		[1]: VFXUtility_upvr (readonly)
+		[2]: Soundbook_upvr (readonly)
+		[3]: PlayVFX_upvr (readonly)
+	]]
+	-- KONSTANTWARNING: Variable analysis failed. Output will have some incorrect variable assignments
+	local var161 = "Water Impact"
+	local formatted_4 = `{arg3} Impact`
+	local var163
+	if VFXUtility_upvr:Contains(formatted_4) then
+		var161 = formatted_4
+	end
+	local formatted_3 = `{arg3} Dive`
+	if VFXUtility_upvr:Contains(formatted_3) then
+		var163 = formatted_3
+	end
+	local formatted_2 = `{arg3} Splash`
+	if Soundbook_upvr:HasSound(formatted_2) then
+	end
+	PlayVFX_upvr:Fire(var163, CFrame.new(arg4 + Vector3.new(0, 0.5, 0)))
+	PlayVFX_upvr:Fire(var161, CFrame.new(arg4))
+	Soundbook_upvr:RenderAt(formatted_2, arg4)
+end
+function module_upvr.FishCaught(arg1, arg2, arg3) -- Line 976
+	--[[ Upvalues[5]:
+		[1]: ItemUtility_upvr (readonly)
+		[2]: AnimationController_upvr (readonly)
+		[3]: HUDController_upvr (readonly)
+		[4]: any_new_result1_upvr_5 (readonly)
+		[5]: Soundbook_upvr (readonly)
+	]]
+	local any_GetItemData_result1 = ItemUtility_upvr:GetItemData(arg2)
+	local var167
+	if not any_GetItemData_result1 then
+	else
+		local Probability = any_GetItemData_result1.Probability
+		if not Probability then
+			Probability = any_GetItemData_result1.ForcedProbability
+		end
+		if not Probability then return end
+		var167 = AnimationController_upvr:StopAnimation
+		var167("FishingRodReelIdle")
+		var167 = AnimationController_upvr:StopAnimation
+		var167("EasyFishReelStart")
+		var167 = AnimationController_upvr:StopAnimation
+		var167("EasyFishReel")
+		var167 = AnimationController_upvr:PlayAnimation
+		var167("CaughtFish1")
+		var167 = HUDController_upvr.ResetCamera
+		var167()
+		var167 = any_new_result1_upvr_5:Clean
+		var167()
+		if Probability.Chance <= 0.001 then
+			var167 = "SuperRareCatch"
+			-- KONSTANTWARNING: GOTO [57] #45
+		end
+		if Probability.Chance <= 0.004 then
+			var167 = "RareCatch"
+		else
+			var167 = "Catch"
+		end
+		local var169 = Soundbook_upvr.Sounds[var167]
+		if var169 then
+			var169:Play()
+		end
+	end
+end
+local Zones_upvr = workspace:WaitForChild("Zones")
+function module_upvr.Run(arg1, arg2, arg3, arg4) -- Line 1006
+	--[[ Upvalues[6]:
+		[1]: var17_upvw (read and write)
+		[2]: CurrentCamera_upvr (readonly)
+		[3]: Constants_upvr (readonly)
+		[4]: RaycastUtility_upvr (readonly)
+		[5]: LocalPlayer_upvr (readonly)
+		[6]: Zones_upvr (readonly)
+	]]
+	if not FishingRodEquipped(var17_upvw.Data.EquippedId) then
+		return arg4()
+	end
+	if typeof(arg2) ~= "Vector2" then
+		return arg4()
+	end
+	local any_ViewportPointToRay_result1 = CurrentCamera_upvr:ViewportPointToRay(arg2.X, arg2.Y)
+	local RaycastParams_new_result1_3 = RaycastParams.new()
+	RaycastParams_new_result1_3.IgnoreWater = true
+	RaycastParams_new_result1_3.RespectCanCollide = false
+	RaycastParams_new_result1_3.FilterType = Enum.RaycastFilterType.Exclude
+	RaycastParams_new_result1_3.FilterDescendantsInstances = RaycastUtility_upvr:getFilteredTargets(LocalPlayer_upvr)
+	local workspace_Raycast_result1 = workspace:Raycast(any_ViewportPointToRay_result1.Origin, any_ViewportPointToRay_result1.Direction * Constants_upvr.FishingDistance, RaycastParams_new_result1_3)
+	if workspace_Raycast_result1 and workspace_Raycast_result1.Instance:IsDescendantOf(Zones_upvr) then
+		return arg3(workspace_Raycast_result1, any_ViewportPointToRay_result1)
+	end
+	return arg4(any_ViewportPointToRay_result1)
+end
+function module_upvr.GetCurrentGUID(arg1) -- Line 1027
+	--[[ Upvalues[1]:
+		[1]: var36_upvw (read and write)
+	]]
+	return var36_upvw
+end
+local any_RemoteEvent_result1_upvr_5 = Net_upvr:RemoteEvent("FishingMinigameChanged")
+local any_RemoteEvent_result1_upvr_2 = Net_upvr:RemoteEvent("FishingStopped")
+local any_RemoteEvent_result1_upvr_4 = Net_upvr:RemoteEvent("UpdateChargeState")
+local any_RemoteEvent_result1_upvr = Net_upvr:RemoteEvent("FishCaught")
+local any_RemoteEvent_result1_upvr_6 = Net_upvr:RemoteEvent("BaitSpawned")
+function module_upvr.Init(arg1) -- Line 1035
+	--[[ Upvalues[13]:
+		[1]: any_new_result1_upvr_2 (readonly)
+		[2]: spr_upvr (readonly)
+		[3]: CanvasGroup_upvr (readonly)
+		[4]: any_RemoteEvent_result1_upvr_5 (readonly)
+		[5]: module_upvr (readonly)
+		[6]: any_RemoteEvent_result1_upvr_2 (readonly)
+		[7]: any_RemoteEvent_result1_upvr_4 (readonly)
+		[8]: any_RemoteEvent_result1_upvr (readonly)
+		[9]: any_RemoteEvent_result1_upvr_6 (readonly)
+		[10]: var36_upvw (read and write)
+		[11]: var37_upvw (read and write)
+		[12]: var17_upvw (read and write)
+		[13]: TextNotificationController_upvr (readonly)
+	]]
+	any_new_result1_upvr_2:Connect(function(arg1_9) -- Line 1036
+		--[[ Upvalues[2]:
+			[1]: spr_upvr (copied, readonly)
+			[2]: CanvasGroup_upvr (copied, readonly)
+		]]
+		spr_upvr.stop(CanvasGroup_upvr.Left.Bar)
+		spr_upvr.stop(CanvasGroup_upvr.Right.Bar)
+		local udim2 = UDim2.fromScale(arg1_9.Progress, 1)
+		spr_upvr.target(CanvasGroup_upvr.Left.Bar, 1, 3, {
+			Size = udim2;
+		})
+		spr_upvr.target(CanvasGroup_upvr.Right.Bar, 1, 3, {
+			Size = udim2;
+		})
+	end)
+	any_RemoteEvent_result1_upvr_5.OnClientEvent:Connect(function(...) -- Line 1049
+		--[[ Upvalues[1]:
+			[1]: module_upvr (copied, readonly)
+		]]
+		module_upvr:FishingMinigameChanged(...)
+	end)
+	any_RemoteEvent_result1_upvr_2.OnClientEvent:Connect(function() -- Line 1052
+		--[[ Upvalues[1]:
+			[1]: module_upvr (copied, readonly)
+		]]
+		module_upvr:FishingStopped()
+	end)
+	any_RemoteEvent_result1_upvr_4.OnClientEvent:Connect(function(...) -- Line 1057
+		--[[ Upvalues[1]:
+			[1]: module_upvr (copied, readonly)
+		]]
+		module_upvr:UpdateChargeState(...)
+	end)
+	any_RemoteEvent_result1_upvr.OnClientEvent:Connect(function(...) -- Line 1062
+		--[[ Upvalues[1]:
+			[1]: module_upvr (copied, readonly)
+		]]
+		module_upvr:FishCaught(...)
+	end)
+	any_RemoteEvent_result1_upvr_6.OnClientEvent:Connect(function(...) -- Line 1065
+		--[[ Upvalues[1]:
+			[1]: module_upvr (copied, readonly)
+		]]
+		module_upvr:BaitSpawned(...)
+	end)
+	local function _() -- Line 1069
+		--[[ Upvalues[6]:
+			[1]: var36_upvw (copied, read and write)
+			[2]: var37_upvw (copied, read and write)
+			[3]: var17_upvw (copied, read and write)
+			[4]: module_upvr (copied, readonly)
+			[5]: TextNotificationController_upvr (copied, readonly)
+			[6]: any_new_result1_upvr_2 (copied, readonly)
+		]]
+		-- KONSTANTWARNING: Variable analysis failed. Output will have some incorrect variable assignments
+		while true do
+			if var36_upvw then
+				local var197 = var37_upvw
+				local var198
+				if var197 ~= nil then
+					var198 = 0
+					if var197.CaughtFish <= 100 then
+						var198 = 0.02
+					end
+					local workspace_GetServerTimeNow_result1_2 = workspace:GetServerTimeNow()
+					var197.Progress = math.clamp(var197.Progress, var198, 1)
+					local var200
+					if var197.LastShift <= workspace_GetServerTimeNow_result1_2 or 0 < var197.Inputs and var197.LastShift == 0 then
+						var200 = true
+					end
+					if var200 then
+						local var201
+						if var201 == 0 and not var17_upvw:GetExpect("AutoFishing") then
+							var201 = module_upvr
+							var201 = var201:RequestClientStopFishing
+							var201(true, function() -- Line 1099
+								--[[ Upvalues[1]:
+									[1]: TextNotificationController_upvr (copied, readonly)
+								]]
+								TextNotificationController_upvr:DeliverNotification({
+									Type = "Text";
+									Text = "The fish got away!";
+									TextColor = {
+										R = 255;
+										G = 92;
+										B = 72;
+									};
+									CustomDuration = 4;
+								})
+							end)
+							var201 = task.wait
+							var201(0.1)
+						else
+							var201 = 0.2
+							if var197.CaughtFish < 5 then
+								var201 = 0.05
+							end
+							if var37_upvw then
+								var37_upvw.LastShift = workspace_GetServerTimeNow_result1_2 + 0.314 * (0.1 + math.random() * 0.9) * (6 - var197.FishStrength)
+								var37_upvw.Progress = math.clamp(var197.Progress - (var201) * (math.random() * 0.15 * var197.FishStrength) * var197.FishingResilience, var198, 1)
+								any_new_result1_upvr_2:Fire(var37_upvw)
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+end
+local Replion_upvr = require(ReplicatedStorage.Packages.Replion)
+local Gears_upvr = script:WaitForChild("Gears")
+local Thread_upvr = require(ReplicatedStorage.Packages.Thread)
+local var208_upvw = false
+local var209_upvw = false
+local module_upvr_3 = require(script:WaitForChild("GamepadStates"))
+function module_upvr.Start(arg1) -- Line 1144
+	--[[ Upvalues[20]:
+		[1]: var17_upvw (read and write)
+		[2]: Replion_upvr (readonly)
+		[3]: var36_upvw (read and write)
+		[4]: module_upvr (readonly)
+		[5]: UserInputService_upvr (readonly)
+		[6]: Gears_upvr (readonly)
+		[7]: ItemUtility_upvr (readonly)
+		[8]: InputControl_upvr (readonly)
+		[9]: tbl_2_upvr (readonly)
+		[10]: CurrentCamera_upvr (readonly)
+		[11]: GuiControl_upvr (readonly)
+		[12]: MobileFishingButton_upvr (readonly)
+		[13]: Thread_upvr (readonly)
+		[14]: var208_upvw (read and write)
+		[15]: var209_upvw (read and write)
+		[16]: RunService_upvr (readonly)
+		[17]: var32_upvw (read and write)
+		[18]: Indicator_upvr (readonly)
+		[19]: module_upvr_3 (readonly)
+		[20]: TopTop_upvr (readonly)
+	]]
+	var17_upvw = Replion_upvr.Client:WaitReplion("Data")
+	local tbl_3_upvr = {
+		MB1 = {
+			PC = {
+				["Fishing Rods"] = function(arg1_10) -- Line 1152
+					--[[ Upvalues[3]:
+						[1]: var36_upvw (copied, read and write)
+						[2]: module_upvr (copied, readonly)
+						[3]: UserInputService_upvr (copied, readonly)
+					]]
+					if var36_upvw then
+						module_upvr:RequestFishingMinigameClick()
+					else
+						module_upvr:RequestChargeFishingRod(UserInputService_upvr:GetMouseLocation())
+					end
+				end;
+				Gears = function(arg1_11) -- Line 1161
+					--[[ Upvalues[1]:
+						[1]: Gears_upvr (copied, readonly)
+					]]
+					local SOME = Gears_upvr:FindFirstChild(arg1_11.Data.Name)
+					if SOME and SOME:IsA("ModuleScript") then
+						local pcall_result1, pcall_result2_3 = pcall(require, SOME)
+						if pcall_result1 then
+							pcall_result2_3()
+						end
+					end
+				end;
+			};
+			Mobile = {
+				["Fishing Rods"] = function(arg1_12) -- Line 1173
+					--[[ Upvalues[2]:
+						[1]: var36_upvw (copied, read and write)
+						[2]: module_upvr (copied, readonly)
+					]]
+					if var36_upvw then
+						module_upvr:RequestFishingMinigameClick()
+					end
+				end;
+				Gears = function(arg1_13) -- Line 1179
+					--[[ Upvalues[1]:
+						[1]: Gears_upvr (copied, readonly)
+					]]
+					local SOME_3 = Gears_upvr:FindFirstChild(arg1_13.Data.Name)
+					if SOME_3 and SOME_3:IsA("ModuleScript") then
+						local pcall_result1_2, pcall_result2_2 = pcall(require, SOME_3)
+						if pcall_result1_2 then
+							pcall_result2_2()
+						end
+					end
+				end;
+			};
+		};
+	}
+	local function ActivateMB1_upvr(arg1_14, ...) -- Line 1192, Named "ActivateMB1"
+		--[[ Upvalues[3]:
+			[1]: tbl_3_upvr (readonly)
+			[2]: var17_upvw (copied, read and write)
+			[3]: ItemUtility_upvr (copied, readonly)
+		]]
+		local var229 = tbl_3_upvr.MB1[arg1_14]
+		if not var229 then
+		else
+			local any_GetExpect_result1 = var17_upvw:GetExpect("EquippedId")
+			if string.len(any_GetExpect_result1) == 0 then return end
+			local GetEquippedInventoryItem_result1_2 = GetEquippedInventoryItem(any_GetExpect_result1)
+			if not GetEquippedInventoryItem_result1_2 then return end
+			local any_GetItemData_result1_2 = ItemUtility_upvr:GetItemData(GetEquippedInventoryItem_result1_2.Id)
+			if not any_GetItemData_result1_2 then return end
+			local var233 = var229[any_GetItemData_result1_2.Data.Type]
+			if var233 then
+				var233(any_GetItemData_result1_2)
+			end
+		end
+	end
+	InputControl_upvr:RegisterMouseInput(1, function(arg1_15) -- Line 1220
+		--[[ Upvalues[1]:
+			[1]: ActivateMB1_upvr (readonly)
+		]]
+		ActivateMB1_upvr("PC")
+	end)
+	UserInputService_upvr.TouchTapInWorld:Connect(function(arg1_16, arg2) -- Line 1225
+		--[[ Upvalues[1]:
+			[1]: ActivateMB1_upvr (readonly)
+		]]
+		task.wait(0.1)
+		if arg2 then
+		else
+			ActivateMB1_upvr("Mobile")
+		end
+	end)
+	UserInputService_upvr.InputBegan:Connect(function(arg1_17, arg2) -- Line 1235
+		--[[ Upvalues[6]:
+			[1]: tbl_2_upvr (copied, readonly)
+			[2]: var17_upvw (copied, read and write)
+			[3]: ActivateMB1_upvr (readonly)
+			[4]: var36_upvw (copied, read and write)
+			[5]: module_upvr (copied, readonly)
+			[6]: CurrentCamera_upvr (copied, readonly)
+		]]
+		if arg2 then
+		else
+			if not table.find(tbl_2_upvr, arg1_17.KeyCode) then return end
+			if not FishingRodEquipped(var17_upvw:GetExpect("EquippedId")) then
+				if arg1_17.KeyCode == Enum.KeyCode.ButtonR2 then
+					ActivateMB1_upvr("PC")
+				end
+				return
+			end
+			if arg1_17.KeyCode == Enum.KeyCode.ButtonR2 then
+				if var36_upvw then
+					module_upvr:RequestFishingMinigameClick()
+				else
+					local confirmFishingInput_2 = _G.confirmFishingInput
+					if confirmFishingInput_2 then
+						confirmFishingInput_2()
+						return
+					end
+					module_upvr:RequestChargeFishingRod(Vector2.new(CurrentCamera_upvr.ViewportSize.X / 2, CurrentCamera_upvr.ViewportSize.Y / 2))
+				end
+			end
+			if arg1_17.KeyCode == Enum.KeyCode.ButtonB then
+				module_upvr:RequestClientStopFishing(true)
+			end
+		end
+	end)
+	GuiControl_upvr:Hook("Hold Button", MobileFishingButton_upvr).Clicked:Connect(function() -- Line 1276
+		--[[ Upvalues[4]:
+			[1]: var17_upvw (copied, read and write)
+			[2]: var36_upvw (copied, read and write)
+			[3]: module_upvr (copied, readonly)
+			[4]: CurrentCamera_upvr (copied, readonly)
+		]]
+		if not FishingRodEquipped(var17_upvw:GetExpect("EquippedId")) then
+		else
+			if var36_upvw then
+				module_upvr:RequestFishingMinigameClick()
+				return
+			end
+			local confirmFishingInput = _G.confirmFishingInput
+			if confirmFishingInput then
+				confirmFishingInput()
+				return
+			end
+			module_upvr:RequestChargeFishingRod(Vector2.new(CurrentCamera_upvr.ViewportSize.X / 2, CurrentCamera_upvr.ViewportSize.Y / 2))
+		end
+	end)
+	var17_upvw:OnChange("EquippedId", RefreshMobileFishing)
+	var17_upvw:OnChange("EquippedId", RefreshEquippedId)
+	CurrentCamera_upvr:GetPropertyChangedSignal("ViewportSize"):Connect(RefreshMobileFishing)
+	UserInputService_upvr.InputChanged:Connect(RefreshMobileFishing)
+	task.defer(function() -- Line 1304
+		--[[ Upvalues[1]:
+			[1]: var17_upvw (copied, read and write)
+		]]
+		RefreshEquippedId(var17_upvw:GetExpect("EquippedId"))
+		RefreshMobileFishing()
+	end)
+	Thread_upvr:Execute(30, function(arg1_18) -- Line 1310
+		--[[ Upvalues[4]:
+			[1]: UserInputService_upvr (copied, readonly)
+			[2]: var208_upvw (copied, read and write)
+			[3]: module_upvr (copied, readonly)
+			[4]: var209_upvw (copied, read and write)
+		]]
+		var208_upvw = module_upvr:OnCooldown()
+		var209_upvw = module_upvr:Run(UserInputService_upvr:GetMouseLocation(), function(...) -- Line 1315
+			return true
+		end, function(...) -- Line 1318
+			return false
+		end)
+	end)
+	RunService_upvr:BindToRenderStep("UpdateMouseIndicator", Enum.RenderPriority.Camera.Value, function(arg1_19) -- Line 1324
+		--[[ Upvalues[7]:
+			[1]: UserInputService_upvr (copied, readonly)
+			[2]: var36_upvw (copied, read and write)
+			[3]: var208_upvw (copied, read and write)
+			[4]: var32_upvw (copied, read and write)
+			[5]: Indicator_upvr (copied, readonly)
+			[6]: var209_upvw (copied, read and write)
+			[7]: module_upvr_3 (copied, readonly)
+		]]
+		if not UserInputService_upvr.MouseEnabled then
+		else
+			if var36_upvw or var208_upvw or var32_upvw then
+				Indicator_upvr.Enabled = false
+				return
+			end
+			if not var209_upvw then
+				Indicator_upvr.Enabled = false
+				return
+			end
+			local any_GetMouseLocation_result1 = UserInputService_upvr:GetMouseLocation()
+			local AbsoluteSize_2 = Indicator_upvr.Box.AbsoluteSize
+			local AbsoluteSize = Indicator_upvr.Box.Horizontal.AbsoluteSize
+			local var248
+			if table.find(module_upvr_3, UserInputService_upvr:GetLastInputType()) then
+				Indicator_upvr.Box.Horizontal.Label.DeviceImage.Visible = true
+				var248 = UDim2.fromOffset(any_GetMouseLocation_result1.X - AbsoluteSize.X * 0.75, any_GetMouseLocation_result1.Y - AbsoluteSize.Y * 0.5 - 14)
+			else
+				-- KONSTANTERROR: Expression was reused, decompilation is incorrect
+				Indicator_upvr.Box.Horizontal.Label.DeviceImage.Visible = false
+				local vector2 = Vector2.new(0, 4)
+				var248 = UDim2.fromOffset(any_GetMouseLocation_result1.X + AbsoluteSize_2.X * 0.1 + vector2.X, any_GetMouseLocation_result1.Y + AbsoluteSize_2.Y * 0.5 + vector2.Y)
+			end
+			Indicator_upvr.Box.Position = var248
+			Indicator_upvr.Enabled = true
+		end
+	end)
+	if GuiControl_upvr:GetDevice() == "Mobile" then
+		TopTop_upvr.Top.Size = UDim2.fromScale(1.2, 1.2)
+	end
+end
+function GetEquippedInventoryItem(arg1) -- Line 1374
+	--[[ Upvalues[1]:
+		[1]: var17_upvw (read and write)
+	]]
+	if string.len(arg1) == 0 then
+	else
+		for _, var251 in var17_upvw:GetExpect("Inventory"), nil do
+			for _, var253 in ipairs(var251) do
+				if var253.UUID == arg1 then
+					return var253
+				end
+			end
+		end
+	end
+end
+function GetItemDataFromEquippedItem(arg1) -- Line 1391
+	--[[ Upvalues[1]:
+		[1]: ItemUtility_upvr (readonly)
+	]]
+	local GetEquippedInventoryItem_result1 = GetEquippedInventoryItem(arg1)
+	if not GetEquippedInventoryItem_result1 then return end
+	return ItemUtility_upvr:GetItemData(GetEquippedInventoryItem_result1.Id)
+end
+function FishingRodEquipped(arg1) -- Line 1400
+	local GetItemDataFromEquippedItem_result1_3 = GetItemDataFromEquippedItem(arg1)
+	local var259
+	if not GetItemDataFromEquippedItem_result1_3 then return end
+	if GetItemDataFromEquippedItem_result1_3.Data.Type ~= "Fishing Rods" then
+		var259 = false
+	else
+		var259 = true
+	end
+	return var259
+end
+function RefreshMobileFishing() -- Line 1409
+	--[[ Upvalues[4]:
+		[1]: UserInputService_upvr (readonly)
+		[2]: CurrentCamera_upvr (readonly)
+		[3]: var17_upvw (read and write)
+		[4]: MobileFishingButton_upvr (readonly)
+	]]
+	local var260
+	if UserInputService_upvr.TouchEnabled or CurrentCamera_upvr.ViewportSize.Y <= 500 or UserInputService_upvr:GetLastInputType() == Enum.UserInputType.Touch then
+		var260 = true
+	end
+	if FishingRodEquipped(var17_upvw:GetExpect("EquippedId")) then
+		MobileFishingButton_upvr.Visible = var260
+	else
+		MobileFishingButton_upvr.Visible = false
+	end
+end
+local Horizontal_upvr = Indicator_upvr.Box.Horizontal
+function RefreshEquippedId(arg1) -- Line 1424
+	--[[ Upvalues[2]:
+		[1]: Soundbook_upvr (readonly)
+		[2]: Horizontal_upvr (readonly)
+	]]
+	local GetItemDataFromEquippedItem_result1 = GetItemDataFromEquippedItem(arg1)
+	if GetItemDataFromEquippedItem_result1 and GetItemDataFromEquippedItem_result1.Data.Type == "Fishing Rods" then
+		local var263 = "Equip - Starter Rod"
+		local formatted = `Custom Equip - {GetItemDataFromEquippedItem_result1.Data.Name}`
+		if Soundbook_upvr:HasSound(formatted) then
+			var263 = formatted
+		end
+		Soundbook_upvr.Sounds[var263]:Play().PlaybackSpeed = 0.95 + math.random() * 0.35
+	end
+	if FishingRodEquipped(arg1) then
+		Horizontal_upvr.Box.Vector.ImageTransparency = 0
+		Horizontal_upvr.Label.Visible = true
+	else
+		Horizontal_upvr.Box.Vector.ImageTransparency = 0.5
+		Horizontal_upvr.Label.Visible = false
+	end
+	RefreshIdle()
+end
+local module_upvr_2 = require(script:WaitForChild("WeightRanges"))
+function RefreshIdle() -- Line 1455
+	--[[ Upvalues[5]:
+		[1]: var17_upvw (read and write)
+		[2]: ItemUtility_upvr (readonly)
+		[3]: LocalPlayer_upvr (readonly)
+		[4]: AnimationController_upvr (readonly)
+		[5]: module_upvr_2 (readonly)
+	]]
+	-- KONSTANTERROR: [0] 1. Error Block 1 start (CF ANALYSIS FAILED)
+	local any_GetExpect_result1_2 = var17_upvw:GetExpect("EquippedId")
+	-- KONSTANTERROR: [0] 1. Error Block 1 end (CF ANALYSIS FAILED)
+	-- KONSTANTERROR: [7] 7. Error Block 2 start (CF ANALYSIS FAILED)
+	-- KONSTANTERROR: [7] 7. Error Block 2 end (CF ANALYSIS FAILED)
+	-- KONSTANTERROR: [11] 10. Error Block 3 start (CF ANALYSIS FAILED)
+	-- KONSTANTERROR: [11] 10. Error Block 3 end (CF ANALYSIS FAILED)
+end
+local any_RemoteFunction_result1_upvr_3 = Net_upvr:RemoteFunction("CancelFishingInputs")
+function module_upvr.RequestClientStopFishing(arg1, arg2, arg3) -- Line 1503
+	--[[ Upvalues[3]:
+		[1]: any_RemoteFunction_result1_upvr_3 (readonly)
+		[2]: module_upvr (readonly)
+		[3]: GuiControl_upvr (readonly)
+	]]
+	if any_RemoteFunction_result1_upvr_3:InvokeServer() then
+		module_upvr:UpdateChargeState(nil)
+		module_upvr:FishingStopped()
+		if arg3 then
+			arg3()
+		end
+		GuiControl_upvr:SetHUDVisibility(true)
+	end
+end
+return module_upvr

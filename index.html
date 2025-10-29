@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roblox Admin GUI - Full</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+        @import url('https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css');
+
+        :root {
+            --panel-min-width: 500px;
+            --panel-min-height: 400px;
+        }
+
+        body {
+            background-image: url('https://images.hdqwalls.com/wallpapers/roblox-noob-4k-bi.jpg');
+            background-size: cover;
+            background-position: center;
+            font-family: 'Roboto', sans-serif;
+            height: 100vh;
+            margin: 0;
+            color: #fff;
+            overflow: hidden;
+        }
+        
+        /* --- Panel Utama & Header --- */
+        .admin-panel {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 650px; height: 450px;
+            min-width: var(--panel-min-width); min-height: var(--panel-min-height);
+            display: flex; flex-direction: column;
+            background: rgba(25, 25, 25, 0.45);
+            border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            overflow: hidden; transition: all 0.3s ease;
+        }
+        .panel-header {
+            padding: 12px 20px; cursor: move;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex; justify-content: space-between; align-items: center;
+            flex-shrink: 0;
+        }
+        .panel-header h2 { margin: 0; font-size: 18px; }
+        #minimize-btn {
+            width: 20px; height: 20px; background: rgba(255,255,255,0.2);
+            border-radius: 50%; cursor: pointer; text-align: center;
+            line-height: 18px; font-weight: bold; transition: background-color 0.2s;
+        }
+        #minimize-btn:hover { background: rgba(255,255,255,0.4); }
+        
+        /* --- Kontainer Utama (Sidebar + Konten) --- */
+        .main-container { display: flex; flex-grow: 1; overflow: hidden; }
+        .sidebar {
+            width: 180px; background: rgba(0, 0, 0, 0.15);
+            padding: 15px 10px; flex-shrink: 0;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .sidebar-btn {
+            display: flex; align-items: center; background: transparent;
+            border: none; border-radius: 8px; width: 100%;
+            padding: 10px; margin-bottom: 8px; font-size: 15px;
+            color: rgba(255, 255, 255, 0.7); cursor: pointer;
+            transition: background-color 0.2s, color 0.2s; text-align: left;
+        }
+        .sidebar-btn i { font-size: 20px; margin-right: 12px; }
+        .sidebar-btn:hover { background-color: rgba(255, 255, 255, 0.1); }
+        .sidebar-btn.active { background-color: #5a52e5; color: #fff; font-weight: 500; }
+        
+        /* --- Area Konten --- */
+        .content-area { flex-grow: 1; padding: 20px; overflow-y: auto; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .tab-content h3 {
+            margin-top: 0; margin-bottom: 18px;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            padding-bottom: 10px;
+        }
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+        }
+        .btn {
+            background: rgba(40, 40, 40, 0.6); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px; color: #fff; padding: 12px 15px;
+            font-size: 14px; cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .btn:hover { background: rgba(60, 60, 60, 0.8); transform: translateY(-2px); }
+        
+        /* ======================================= */
+        /* === GAYA BARU UNTUK TAB PLAYER === */
+        /* ======================================= */
+        .settings-card {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .setting-item:last-child { margin-bottom: 0; }
+        .setting-item label { font-size: 15px; font-weight: 500; }
+
+        /* Tombol Toggle On/Off */
+        .switch {
+            position: relative; display: inline-block;
+            width: 50px; height: 28px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider-round {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(255, 255, 255, 0.2);
+            transition: .4s; border-radius: 28px;
+        }
+        .slider-round:before {
+            position: absolute; content: ""; height: 20px; width: 20px;
+            left: 4px; bottom: 4px; background-color: white;
+            transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider-round { background-color: #5a52e5; }
+        input:checked + .slider-round:before { transform: translateX(22px); }
+
+        /* Slider Kecepatan */
+        .speed-slider {
+            -webkit-appearance: none; appearance: none;
+            width: 55%; height: 8px; background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px; outline: none; transition: opacity .2s;
+        }
+        .speed-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 20px; height: 20px; background: #fff;
+            border-radius: 50%; cursor: pointer;
+        }
+        .speed-slider::-moz-range-thumb {
+            width: 20px; height: 20px; background: #fff;
+            border-radius: 50%; cursor: pointer;
+        }
+        .btn-full { width: 100%; }
+        
+        /* --- Handle Resize & State Minimize --- */
+        .resize-handle {
+            width: 15px; height: 15px; position: absolute;
+            right: 0; bottom: 0; cursor: se-resize;
+        }
+        .admin-panel.minimized {
+            width: 60px !important; height: 60px !important; border-radius: 50%;
+            cursor: pointer; background: rgba(40, 40, 40, 0.8);
+        }
+        .admin-panel.minimized .panel-header,
+        .admin-panel.minimized .main-container,
+        .admin-panel.minimized .resize-handle { display: none; }
+        .admin-panel.minimized::before {
+            content: '💻'; font-size: 28px; display: flex; justify-content: center;
+            align-items: center; width: 100%; height: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-panel" id="adminPanel">
+        <div class="panel-header" id="panelHeader">
+            <h2>Admin Panel</h2>
+            <div id="minimize-btn" title="Minimize">−</div>
+        </div>
+
+        <div class="main-container">
+            <div class="sidebar">
+                <button class="sidebar-btn active" data-tab="info"><i class='bx bx-info-circle'></i>Info</button>
+                <button class="sidebar-btn" data-tab="player"><i class='bx bx-user'></i>Player</button>
+                
+            </div>
+            
+            <div class="content-area">
+                <div id="info-tab" class="tab-content active">
+                    <h3>Info & Updates</h3>
+                    <p>Welcome to the Admin Panel v1.1!</p>
+                    <p>Latest Update: Player controls now use toggles and sliders for better user experience.</p>
+                </div>
+
+                <div id="player-tab" class="tab-content">
+                    <h3>Player Modes</h3>
+                    <div class="settings-card">
+                        <div class="setting-item">
+                            <label for="noclip-toggle">No Clip</label>
+                            <label class="switch">
+                                <input type="checkbox" id="noclip-toggle">
+                                <span class="slider-round"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="setting-item">
+                            <label for="walkspeed-slider">Walk Speed: <span id="speed-value">16</span></label>
+                            <input type="range" min="16" max="200" value="16" class="speed-slider" id="walkspeed-slider">
+                        </div>
+
+                        <div class="setting-item">
+                           <button class="btn btn-full" id="reset-speed-btn">Reset Speed</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="farm-tab" class="tab-content">
+                    <h3>Farm Automation</h3> <div class="button-grid"> <button class="btn">Auto Fish</button> <button class="btn">Auto Mine</button> <button class="btn">Auto Chop</button> <button class="btn">Auto Collect</button> </div>
+                </div>
+                <div id="auto-tab" class="tab-content">
+                    <h3>Auto Actions</h3> <div class="button-grid"> <button class="btn">Auto Sell</button> <button class="btn">Auto Buy</button> <button class="btn">Auto Rebirth</button> <button class="btn">Auto Quest</button> </div>
+                </div>
+                <div id="utilities-tab" class="tab-content">
+                    <h3>Utilities</h3> <div class="button-grid"> <button class="btn">Enable Radar</button> <button class="btn">Enable ESP</button> <button class="btn">Diving Gear</button> <button class="btn">Server Message</button> </div>
+                </div>
+                <div id="shop-tab" class="tab-content">
+                    <h3>Shop Items</h3> <div class="button-grid"> <button class="btn">Buy Sword</button> <button class="btn">Buy Shield</button> <button class="btn">Buy Potion</button> <button class="btn">Buy Gems</button> </div>
+                </div>
+                <div id="teleport-tab" class="tab-content">
+                    <h3>Teleport Locations</h3> <div class="button-grid"> <button class="btn">To Spawn</button> <button class="btn">To Shop</button> <button class="btn">To Dungeon</button> <button class="btn">To Arena</button> </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="resize-handle" id="resizeHandle"></div>
+    </div>
+
+    <script>
+        const panel = document.getElementById('adminPanel');
+        const header = document.getElementById('panelHeader');
+        const minimizeBtn = document.getElementById('minimize-btn');
+        const resizeHandle = document.getElementById('resizeHandle');
+        const sidebarBtns = document.querySelectorAll('.sidebar-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        // --- 1. Fungsi Tab Sidebar ---
+        sidebarBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                sidebarBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(t => t.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab + '-tab').classList.add('active');
+            });
+        });
+        
+        // --- 2. Fungsi Draggable ---
+        let isDragging = false, offsetX, offsetY;
+        header.addEventListener('mousedown', (e) => {
+            if (e.target === minimizeBtn) return; isDragging = true;
+            offsetX = e.clientX - panel.offsetLeft; offsetY = e.clientY - panel.offsetTop;
+            panel.style.transition = 'none';
+        });
+
+        // --- 3. Fungsi Resizable ---
+        let isResizing = false, startWidth, startHeight, startX, startY;
+        resizeHandle.addEventListener('mousedown', (e) => {
+            isResizing = true; startWidth = panel.offsetWidth; startHeight = panel.offsetHeight;
+            startX = e.clientX; startY = e.clientY; panel.style.transition = 'none';
+        });
+
+        // --- Mouse Event Listener Global ---
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                let newLeft = e.clientX - offsetX, newTop = e.clientY - offsetY;
+                const maxX = window.innerWidth - panel.offsetWidth;
+                const maxY = window.innerHeight - panel.offsetHeight;
+                panel.style.left = Math.max(0, Math.min(newLeft, maxX)) + 'px';
+                panel.style.top = Math.max(0, Math.min(newTop, maxY)) + 'px';
+            }
+            if (isResizing) {
+                panel.style.width = startWidth + (e.clientX - startX) + 'px';
+                panel.style.height = startHeight + (e.clientY - startY) + 'px';
+            }
+        });
+        document.addEventListener('mouseup', () => {
+            isDragging = false; isResizing = false;
+            panel.style.transition = 'all 0.3s ease';
+        });
+
+        // --- 4. Fungsi Minimize & Restore ---
+        minimizeBtn.addEventListener('click', () => panel.classList.add('minimized'));
+        panel.addEventListener('click', () => {
+            if (panel.classList.contains('minimized')) panel.classList.remove('minimized');
+        });
+
+        /* ======================================= */
+        /* === JAVASCRIPT BARU UNTUK TAB PLAYER === */
+        /* ======================================= */
+        const walkSpeedSlider = document.getElementById('walkspeed-slider');
+        const speedValueSpan = document.getElementById('speed-value');
+        const resetSpeedBtn = document.getElementById('reset-speed-btn');
+
+        // Perbarui tampilan angka kecepatan saat slider digeser
+        walkSpeedSlider.addEventListener('input', () => {
+            speedValueSpan.textContent = walkSpeedSlider.value;
+        });
+
+        // Kembalikan kecepatan ke 16 saat tombol reset diklik
+        resetSpeedBtn.addEventListener('click', () => {
+            const defaultValue = 16;
+            walkSpeedSlider.value = defaultValue;
+            speedValueSpan.textContent = defaultValue;
+        });
+
+    </script>
+</body>
+</html>
